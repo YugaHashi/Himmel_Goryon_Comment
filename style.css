@@ -1,0 +1,97 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+body {
+  padding: 16px;
+  font-family: sans-serif;
+  background: transparent;
+  color: #fff;
+}
+.container {
+  max-width: 320px;
+  margin: auto;
+}
+
+/* フォーム要素 */
+form select,
+form input,
+form textarea {
+  width: 100%;
+  margin-top: 8px;
+  padding: 8px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background: #fff;
+  color: #000;
+}
+form option {
+  color: #000;
+}
+form select:disabled,
+form input:disabled,
+form textarea:disabled {
+  background: #f2f2f2;
+  color: #999;
+}
+
+/* 横並び２カラム */
+.row {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+.row select {
+  flex: 1;
+}
+
+/* 共有ボタン */
+button {
+  margin-top: 16px;
+  padding: 12px;
+  width: 100%;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  background-color: #3b82f6;
+  color: #fff;
+  cursor: pointer;
+  transition: background-color .2s ease;
+}
+button:hover:not(:disabled) {
+  background-color: #2563eb;
+}
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* 最新コメント表示 */
+.latest-comment {
+  margin-top: 24px;
+}
+.review-item {
+  background: #fff;
+  color: #333;
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 12px;
+  text-align: left;
+}
+.review-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+.review-header .nick {
+  font-weight: bold;
+}
+.review-header .meta {
+  font-size: 0.85rem;
+  color: #666;
+}
+.review-item .body {
+  line-height: 1.4;
+}
