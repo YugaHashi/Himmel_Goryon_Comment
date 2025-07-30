@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>クチコミ投稿</title>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+  <script>
+    // 自動で ?date=YYYY-MM-DD を付与
+    (function(){
+      const today = new Date().toISOString().slice(0,10);
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('date') !== today) {
+        params.set('date', today);
+        location.replace(`${location.pathname}?${params.toString()}`);
+      }
+    })();
+  </script>
+
+  <div class="container">
+    <!-- クチコミフォーム -->
+    <form id="comment-form">
+      <select id="form-menu" required>
+        <option value="">メニューを選択してください</option>
+      </select>
+
+      <div class="row">
+        <select id="age-group">
+          <option value="">年代（任意）</option>
+          <option>10代</option><option>20代</option><option>30代</option>
+          <option>40代</option><option>50代</option><option>60代以上</option>
+        </select>
+        <select id="gender">
+          <option value="">性別（任意）</option>
+          <option>男性</option><option>女性</option><option>その他</option>
+        </select>
+      </div>
+
+      <input id="nickname" placeholder="ニックネーム（任意）"/>
+
+      <textarea id="comment" rows="3" placeholder="クチコミを入力してください" required></textarea>
+
+      <button id="submit-btn" type="submit">共有する</button>
+    </form>
+
+    <!-- 投稿後に表示する最新コメント -->
+    <div id="latest-comment" class="latest-comment"></div>
+  </div>
+
+  <script type="module" src="script.js"></script>
+</body>
+</html>
