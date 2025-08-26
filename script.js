@@ -5,32 +5,65 @@ const supabase = createClient(
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxhYm1odHJhZmRzbGZ3cW16Z2t5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk2OTAzNzksImV4cCI6MjA2NTI2NjM3OX0.CviQ3lzngfvqDFwEtDw5cTRSEICWliunXngYCokhbNs'
 );
 
-const MAX_PER_DAY  = 1;
-const STORAGE_KEY  = 'posts_by_date';
-const USERINFO_KEY = 'user_info_by_date';
+const MAX_PER_DAY = 1;
+const STORAGE_KEY = 'posts_by_date';
 
 const els = {
-  form:    document.getElementById('comment-form'),
-  menu:    document.getElementById('form-menu'),
-  age:     document.getElementById('age-group'),
-  gender:  document.getElementById('gender'),
-  nick:    document.getElementById('nickname'),
-  txt:     document.getElementById('comment'),
-  submit:  document.getElementById('submit-btn'),
-  latest:  document.getElementById('latest-comment'),
+  form: document.getElementById('comment-form'),
+  category: document.getElementById('form-category'),
+  menu: document.getElementById('form-menu'),
+  txt: document.getElementById('comment'),
+  submit: document.getElementById('submit-btn'),
+  latest: document.getElementById('latest-comment'),
+  heartBtn: document.getElementById('heart-stamp'),
+  heartEmoji: document.getElementById('heart-emoji'),
 };
 
-function getToday() {
-  return new Date().toISOString().slice(0, 10);
+function getToday(){
+  return new Date().toISOString().slice(0,10);
 }
-
-function getPageDate() {
+function getPageDate(){
   const p = new URLSearchParams(window.location.search).get('date');
   return /^\d{4}-\d{2}-\d{2}$/.test(p) ? p : null;
 }
 
+async function loadCategories(){
+  // categories は find_categories テーブルから取得
+  const { data, error } = await supabase
+    .from('find_categories')
+    .select('id,name')
+    .order('id', { ascending: true });
+
+  if(error){ console.error('カテゴリ取得エラー', error); alert('カテゴリーの読み込みに失敗しました。'); return; }
+
+  data.forEach(c=>{
+    els.category.insertAdjacentHTML('beforeend', `<option value="${c.id}">${c.name}</option>`);
+  });
+}
+
+async function loadMenusByCategory(categoryId){
+  els.menu.innerHTML = `<option value="">メニューを選択してください</option>`;
+  els.menu.disabled = true;
+
+  if(!categoryId) return;
+
+  // find_menus から category_id でフィルタ
+  const { data, error } = await supabase
+    .from('find_menus')
+    .select('id,name_jp')
+    .eq('category_id', Number(categoryId))
+    .order('id', { ascending: true });
+
+  if(error){ console.error('メニュー取得エラー', error); alert('メニューの読み込みに失敗しました。'); return; }
+
+  data.forEach(m=>{
+    els.menu.insertAdjacentHTML('beforeend', `<option value="${m.id}">${m.name_jp}</option>`);
+  });
+  els.menu.disabled = false;
+}
+
 window.addEventListener('DOMContentLoaded', async () => {
-  const today    = getToday();
+  const today = getToday();
   const pageDate = getPageDate();
   if (pageDate && pageDate !== today) {
     alert('このページは本日用ではありません。');
@@ -38,101 +71,84 @@ window.addEventListener('DOMContentLoaded', async () => {
     return;
   }
 
-  // ── メニュー取得＆プルダウン生成 ──
-  const { data: menus, error: menuErr } = await supabase
-    .from('find_menus')
-    .select('id,name_jp');
-  if (menuErr) {
-    console.error('メニュー取得エラー', menuErr);
-    alert('メニュー読み込みに失敗しました。');
-    return;
-  }
-  menus.forEach(m => {
-    els.menu.insertAdjacentHTML(
-      'beforeend',
-      `<option value="${m.id}">${m.name_jp}</option>`
-    );
+  // カテゴリー読込 → 連動メニューはカテゴリ選択時にロード
+  await loadCategories();
+
+  // ハートの挙動（押す→発光＆ポン＆振動）
+  els.heartBtn.addEventListener('click', () => {
+    if(!els.heartBtn.classList.contains('stamped')){
+      els.heartBtn.classList.add('stamped');
+      // 軽いバイブレーション（対応端末のみ）
+      if (navigator.vibrate) navigator.vibrate([16, 40, 16]);
+    } else {
+      // 2回目以降はトグルでもOKなら以下を有効化
+      // els.heartBtn.classList.remove('stamped');
+    }
   });
 
-  // ── 任意情報（初回のみ）ロック設定 ──
-  const infos = JSON.parse(localStorage.getItem(USERINFO_KEY) || '{}');
-  if (infos[today]) {
-    const saved = infos[today];
-    els.age.value    = saved.age    || '';
-    els.gender.value = saved.gender || '';
-    els.nick.value   = saved.nick   || '';
-    els.age.disabled = els.gender.disabled = els.nick.disabled = true;
-  }
+  // カテゴリー変更でメニューを絞り込み
+  els.category.addEventListener('change', async (e)=>{
+    const cid = e.target.value;
+    await loadMenusByCategory(cid);
+  });
 });
 
-els.form.addEventListener('submit', async e => {
+els.form.addEventListener('submit', async (e)=>{
   e.preventDefault();
-  const today    = getToday();
+  const today = getToday();
   const pageDate = getPageDate();
   if (pageDate && pageDate !== today) {
     alert('このページは本日用ではありません。');
     return;
   }
 
-  // 入力値チェック
-  const menuId  = +els.menu.value;
+  // 入力チェック
+  const categoryId = Number(els.category.value);
+  const menuId = Number(els.menu.value);
   const comment = els.txt.value.trim();
-  if (!menuId)  { alert('メニューを選択してください。'); return; }
-  if (!comment) { alert('クチコミを入力してください。'); return; }
+
+  if(!categoryId){ alert('カテゴリーを選択してください。'); return; }
+  if(!menuId){ alert('メニューを選択してください。'); return; }
+  if(!comment){ alert('クチコミを入力してください。'); return; }
 
   // 1回/日のチェック
-  const allPosts  = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+  const allPosts = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
   const todayList = allPosts[today] || [];
-  if (todayList.length >= MAX_PER_DAY) {
+  if(todayList.length >= MAX_PER_DAY){
     alert(`本日の上限(${MAX_PER_DAY}件)に達しました。`);
     return;
   }
 
-  // 任意情報初回保存
-  const allInfos = JSON.parse(localStorage.getItem(USERINFO_KEY) || '{}');
-  if (!allInfos[today]) {
-    allInfos[today] = {
-      age:    els.age.value    || null,
-      gender: els.gender.value || null,
-      nick:   els.nick.value   || null
-    };
-    localStorage.setItem(USERINFO_KEY, JSON.stringify(allInfos));
-    els.age.disabled = els.gender.disabled = els.nick.disabled = true;
-  }
-
-  // ── Supabaseに挿入 ──
+  // Supabase 挿入（年代・性別・ニックネームは削除済み）
   const payload = {
-    menu_id:  menuId,
-    nickname: els.nick.value   || null,
-    age:      els.age.value    || null,
-    gender:   els.gender.value || null,
+    menu_id: menuId,
     comment
   };
+
   const { error } = await supabase
     .from('find_comments')
     .insert([payload], { returning: 'minimal' });
-  if (error) {
+
+  if(error){
     console.error('保存エラー', error);
     alert(`保存に失敗しました：${error.message}`);
     return;
   }
 
-  // ── ローカル履歴更新 ──
+  // ローカル履歴更新
   todayList.push(menuId);
   allPosts[today] = todayList;
   localStorage.setItem(STORAGE_KEY, JSON.stringify(allPosts));
 
-  // ── ボタン＆メッセージ切り替え ──
+  // ボタン＆メッセージ切替
   els.submit.textContent = 'ランキングに反映されました';
-  els.submit.disabled    = true;
+  els.submit.disabled = true;
 
-  // ── 最新投稿をそのまま表示 ──
-  const nick = els.nick.value || '匿名';
+  // 最新投稿を表示
   els.latest.innerHTML = `
     <div class="review-item">
       <div class="review-header">
-        <span class="nick">${nick}</span>
-        <span class="meta">${getToday()}</span>
+        <span class="meta">${today}</span>
       </div>
       <div class="body">${comment}</div>
     </div>
