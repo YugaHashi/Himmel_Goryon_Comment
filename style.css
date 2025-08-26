@@ -1,97 +1,110 @@
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-body {
-  padding: 16px;
-  font-family: sans-serif;
-  background: transparent;
-  color: #fff;
-}
-.container {
-  max-width: 320px;
-  margin: auto;
+:root{
+  --pink:#ff4f9a;
+  --pink-deep:#ff2d84;
+  --pink-light:#ffd6e9;
+  --stroke:#ff7ab6;
+  --shadow:0 8px 24px rgba(255, 77, 140, .28);
+  --border:#e5e7eb;
+  --text:#111827;
+  --muted:#6b7280;
 }
 
-/* フォーム要素 */
-form select,
-form input,
-form textarea {
-  width: 100%;
-  margin-top: 8px;
-  padding: 8px;
-  font-size: 14px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  background: #fff;
-  color: #000;
+*{box-sizing:border-box;}
+body{
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Hiragino Kaku Gothic ProN", "Noto Sans JP", Arial, sans-serif;
+  margin:0; color:var(--text); background:#fff;
 }
-form option {
-  color: #000;
-}
-form select:disabled,
-form input:disabled,
-form textarea:disabled {
-  background: #f2f2f2;
-  color: #999;
+.container{ max-width:680px; margin:24px auto; padding:0 16px; }
+
+.stamp-area{
+  display:flex; flex-direction:column; align-items:center; gap:8px; margin:8px 0 16px;
 }
 
-/* 横並び２カラム */
-.row {
-  display: flex;
-  gap: 8px;
-  margin-top: 8px;
+/* 物理 3cm x 3cm のスタンプ領域 */
+.heart-stamp{
+  width:3cm; height:3cm; /* 要望どおり 正方形 */
+  position:relative; border-radius:20px;
+  border:2px dashed var(--stroke);
+  background: radial-gradient(120% 120% at 50% 40%, rgba(255,182,212,.22), rgba(255,182,212,.08) 60%, transparent 61%);
+  display:grid; place-items:center;
+  cursor:pointer; outline:none;
+  transition:transform .08s ease;
 }
-.row select {
-  flex: 1;
+.heart-stamp:active{ transform:scale(.98); }
+
+/* 初期は輪郭＋薄い塗りのハート */
+.heart-shape{
+  position:relative; width:58%; aspect-ratio:1/1; display:block;
+  filter: drop-shadow(0 2px 0 rgba(255,77,140,.12));
+}
+.heart-shape::before,
+.heart-shape::after{
+  content:""; position:absolute; width:50%; height:80%;
+  background:transparent; border:3px solid var(--stroke);
+  border-bottom:none; border-radius:50% 50% 0 0;
+  top:8%; transition: all .25s ease;
+}
+.heart-shape::before{ left:0; transform:rotate(-45deg); transform-origin:100% 100%; }
+.heart-shape::after { right:0; transform:rotate(45deg);  transform-origin:0 100%; }
+
+/* 💓絵文字（押したらフェード＆ポップ） */
+.heart-emoji{
+  position:absolute; font-size:28px; opacity:0; transform:scale(.6) translateY(8px);
+  transition: all .28s cubic-bezier(.22,1,.36,1);
+}
+.hint{ color:var(--muted); font-size:12px; margin:0; }
+
+/* 押した後の “点灯＆ポン” アニメ */
+.heart-stamp.stamped{
+  border:2px solid var(--pink);
+  background:
+    radial-gradient(100% 120% at 60% 30%, rgba(255,255,255,.9) 0%, rgba(255,255,255,0) 28%),
+    radial-gradient(140% 100% at 50% 50%, rgba(255,182,212,.35), rgba(255,182,212,0) 60%),
+    #fff;
+  box-shadow: var(--shadow);
+  animation: pop .22s ease-out;
 }
 
-/* 共有ボタン */
-button {
-  margin-top: 16px;
-  padding: 12px;
-  width: 100%;
-  border: none;
-  border-radius: 8px;
-  font-size: 16px;
-  background-color: #3b82f6;
-  color: #fff;
-  cursor: pointer;
-  transition: background-color .2s ease;
+.heart-stamp.stamped .heart-shape::before,
+.heart-stamp.stamped .heart-shape::after{
+  background: radial-gradient(120% 120% at 30% 20%, #fff 0%, #fff0 45%), linear-gradient(180deg, var(--pink) 0%, var(--pink-deep) 90%);
+  border-color: var(--pink-deep);
 }
-button:hover:not(:disabled) {
-  background-color: #2563eb;
-}
-button:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
+.heart-stamp.stamped .heart-emoji{
+  opacity:1; transform:scale(1) translateY(-6px);
+  text-shadow: 0 6px 18px rgba(255, 77, 140, .35);
 }
 
-/* 最新コメント表示 */
-.latest-comment {
-  margin-top: 24px;
+@keyframes pop{
+  0%{ transform:scale(.9); }
+  100%{ transform:scale(1); }
 }
-.review-item {
-  background: #fff;
-  color: #333;
-  padding: 12px;
-  border-radius: 8px;
-  margin-bottom: 12px;
-  text-align: left;
+
+/* フォーム */
+.form{ display:flex; flex-direction:column; gap:16px; margin-top:8px; }
+.labels-under-heart{ display:flex; flex-direction:column; gap:16px; }
+.row.two-cols{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+.field{ display:flex; flex-direction:column; gap:6px; }
+label{ font-size:13px; color:var(--muted); }
+select, textarea, input, button.primary{
+  width:100%; font-size:16px; padding:12px 12px; border-radius:12px; border:1px solid var(--border); background:#fff;
 }
-.review-header {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 8px;
+select:disabled{ color:#9ca3af; }
+textarea{ resize:vertical; min-height:92px; }
+button.primary{
+  background:linear-gradient(180deg,#111827,#0f172a); color:#fff; border:none; cursor:pointer;
 }
-.review-header .nick {
-  font-weight: bold;
+button.primary:disabled{ opacity:.6; cursor:not-allowed; }
+
+/* 最新コメント */
+.latest-comment{ margin-top:8px; }
+.review-item{
+  border:1px solid var(--border); border-radius:12px; padding:12px; margin-top:12px; background:#fff;
 }
-.review-header .meta {
-  font-size: 0.85rem;
-  color: #666;
-}
-.review-item .body {
-  line-height: 1.4;
+.review-header{ display:flex; justify-content:space-between; align-items:center; color:var(--muted); font-size:12px; margin-bottom:8px; }
+.body{ line-height:1.6; }
+
+/* 小さめ画面で1列落とす */
+@media (max-width: 420px){
+  .row.two-cols{ grid-template-columns:1fr; }
 }
