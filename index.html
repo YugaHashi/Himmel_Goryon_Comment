@@ -8,7 +8,7 @@
 </head>
 <body>
   <script>
-    // 自動で ?date=YYYY-MM-DD を付与
+    // 自動で ?date=YYYY-MM-DD を付与（既存仕様を踏襲）
     (function(){
       const today = new Date().toISOString().slice(0,10);
       const params = new URLSearchParams(window.location.search);
@@ -20,29 +20,41 @@
   </script>
 
   <div class="container">
-    <!-- クチコミフォーム -->
-    <form id="comment-form">
-      <select id="form-menu" required>
-        <option value="">メニューを選択してください</option>
-      </select>
+    <!-- ハートのスタンプ -->
+    <div class="stamp-area" aria-live="polite">
+      <button id="heart-stamp" class="heart-stamp" type="button" aria-label="ハートを押す">
+        <span class="heart-shape" aria-hidden="true"></span>
+        <span id="heart-emoji" class="heart-emoji" aria-hidden="true">💓</span>
+      </button>
+      <p class="hint">推すとハートが点灯します</p>
+    </div>
 
-      <div class="row">
-        <select id="age-group">
-          <option value="">年代（任意）</option>
-          <option>10代</option><option>20代</option><option>30代</option>
-          <option>40代</option><option>50代</option><option>60代以上</option>
-        </select>
-        <select id="gender">
-          <option value="">性別（任意）</option>
-          <option>男性</option><option>女性</option><option>その他</option>
-        </select>
+    <!-- クチコミフォーム -->
+    <form id="comment-form" class="form">
+      <div class="labels-under-heart">
+        <div class="row two-cols">
+          <div class="field">
+            <label for="form-category">カテゴリーを選択</label>
+            <select id="form-category" required>
+              <option value="">選択してください</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="form-menu">メニューを選択</label>
+            <select id="form-menu" required disabled>
+              <option value="">カテゴリーを先に選択してください</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="comment">クチコミを入力してください</label>
+          <textarea id="comment" rows="3" placeholder="例：香りが良くて余韻が最高でした" required></textarea>
+        </div>
       </div>
 
-      <input id="nickname" placeholder="ニックネーム（任意）"/>
-
-      <textarea id="comment" rows="3" placeholder="クチコミを入力してください" required></textarea>
-
-      <button id="submit-btn" type="submit">共有する</button>
+      <button id="submit-btn" type="submit" class="primary">共有する</button>
     </form>
 
     <!-- 投稿後に表示する最新コメント -->
