@@ -9,6 +9,7 @@
 <body>
   <script>
     // 自動で ?date=YYYY-MM-DD を付与（既存仕様を踏襲）
+    // 自動で ?date=YYYY-MM-DD を付与（既存仕様を踏襲）
     (function(){
       const today = new Date().toISOString().slice(0,10);
       const params = new URLSearchParams(window.location.search);
