@@ -10,7 +10,7 @@ body{
 }
 .container{ max-width:640px; margin:24px auto; padding:0 16px; text-align:center; }
 
-/* ハートボタン */
+/* ハートボタン *//* ハートボタン */
 .heart{
   width:120px; height:120px;
   background:none;
