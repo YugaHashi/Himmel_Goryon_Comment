@@ -64,7 +64,7 @@ window.addEventListener('DOMContentLoaded', async ()=>{
   await loadCategories();
   els.category.addEventListener('change', (e)=> loadMenusByCategory(e.target.value));
 
-  // ハート：枠→赤PNGへ
+  // ハート：枠→赤PNGへ  // ハート：枠→赤PNGへ
   els.heartBtn.addEventListener('click', ()=>{
     els.heartBtn.classList.add('filled');
   });
