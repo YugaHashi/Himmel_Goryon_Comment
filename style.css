@@ -1,49 +1,69 @@
 :root{
-  --border:#ff4f9a;
+  --blue:#2563eb;        /* 初期カラー（青） */
+  --blue-2:#1d4ed8;
+  --pink:#ff4f9a;        /* 押下後のアクセント（💓イメージ） */
+  --border:#e5e7eb;
   --text:#111827;
-  --muted:#6b7280;
 }
 
-*{box-sizing:border-box;}
+*{ box-sizing:border-box; }
 body{
-  font-family: system-ui, sans-serif;
-  margin:0;
+  margin:0; font-family:system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans JP", sans-serif;
   color:var(--text);
-  background:transparent; /* 白背景削除 *//* 白背景削除 */
+  background:transparent; /* 背景の白は不要 */
 }
-.container{ max-width:720px; margin:24px auto; padding:0 16px; }
+.container{ max-width:640px; margin:24px auto; padding:0 16px; }
 
 /* ハート */
-.heart-area{
-  display:flex; justify-content:center; margin-bottom:20px;
-}
-.heart-stamp{
-  width:80px; height:80px;
-  border:3px solid var(--border);
-  border-radius:50%;
-  background:none;
+.heart{
+  display:grid; place-items:center;
+  width:96px; height:96px;
+  margin:0 auto 16px;
+  border-radius:20px;
+  border:2px solid var(--blue);
+  background:transparent;
   cursor:pointer;
-  background-size:cover;
-  background-position:center;
-  transition:all .25s ease;
+  transition:transform .12s ease, border-color .2s ease, box-shadow .2s ease;
 }
-.heart-stamp.stamped{
-  border:none;
-  background-image:url("heart.png"); /* アップロードしたハート画像のパス */
+.heart:active{ transform:scale(.98); }
+#heart-emoji{
+  font-size:52px; line-height:1;
+  transition: transform .22s cubic-bezier(.22,1,.36,1), filter .22s ease;
 }
 
-/* フォーム */
-.form{ display:flex; flex-direction:column; gap:16px; }
-.row.two-cols{ display:grid; grid-template-columns:1fr 1fr; gap:16px; }
-.field{ display:flex; flex-direction:column; gap:4px; }
-label{ font-size:13px; color:var(--muted); }
-select, textarea, button.primary{
-  width:100%; font-size:16px; padding:10px;
-  border-radius:8px; border:1px solid #ccc; background:#fff;
+/* 押した後の演出（枠色・ドロップシャドウだけ付与） */
+.heart.stamped{
+  border-color:var(--pink);
+  box-shadow:0 10px 30px rgba(255,79,154,.25);
 }
-textarea{ resize:vertical; }
-button.primary{
-  background:#111827; color:#fff; border:none; cursor:pointer;
-  padding:12px;
+.heart.stamped #heart-emoji{
+  transform:scale(1.05);
 }
-button.primary:disabled{ opacity:.6; cursor:not-allowed; }
+
+/* フォーム（縦並び） */
+.form{ display:flex; flex-direction:column; gap:12px; }
+
+/* セレクト等の初期色を青寄りに */
+select, textarea{
+  width:100%; font-size:16px; padding:11px 12px;
+  border-radius:12px; border:1.5px solid var(--blue);
+  background:#fff;
+  outline:none;
+}
+select:disabled{ border-color:var(--border); color:#9ca3af; }
+textarea{ resize:vertical; min-height:96px; }
+
+/* フォーカス時の青いグロー */
+select:focus, textarea:focus{
+  border-color:var(--blue-2);
+  box-shadow:0 0 0 3px rgba(37,99,235,.18);
+}
+
+/* 送信ボタン */
+.primary{
+  border:none; border-radius:12px;
+  padding:12px 16px; font-size:16px; color:#fff;
+  background:linear-gradient(180deg, var(--blue), var(--blue-2));
+  cursor:pointer;
+}
+.primary:disabled{ opacity:.6; cursor:not-allowed; }
