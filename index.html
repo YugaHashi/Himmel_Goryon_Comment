@@ -7,25 +7,11 @@
   <link rel="stylesheet" href="style.css"/>
 </head>
 <body>
-  <script>
-    // ?date=YYYY-MM-DD を自動付与（既存仕様）
-    (function(){
-      const today = new Date().toISOString().slice(0,10);
-      const params = new URLSearchParams(window.location.search);
-      if (params.get('date') !== today) {
-        params.set('date', today);
-        location.replace(`${location.pathname}?${params.toString()}`);
-      }
-    })();
-  </script>
-
   <div class="container">
-    <!-- ハート（初期: 💙 ／押下後: 💓） -->
-    <button id="heart" class="heart" type="button" aria-label="ハート">
-      <span id="heart-emoji" aria-hidden="true">💙</span>
-    </button>
+    <!-- ハートボタン -->
+    <button id="heart" class="heart" type="button" aria-label="ハート"></button>
 
-    <!-- フォーム（縦並び） -->
+    <!-- フォーム -->
     <form id="comment-form" class="form">
       <select id="form-category" required aria-label="カテゴリー">
         <option value="">カテゴリーを選択</option>
