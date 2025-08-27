@@ -14,7 +14,7 @@ const els = {
   menu: document.getElementById('form-menu'),
   txt: document.getElementById('comment'),
   submit: document.getElementById('submit-btn'),
-  heartBtn: document.getElementById('heart'),
+  heart: document.getElementById('heart'),
 };
 
 const getToday = () => new Date().toISOString().slice(0,10);
@@ -23,18 +23,20 @@ const getPageDate = () => {
   return /^\d{4}-\d{2}-\d{2}$/.test(p) ? p : null;
 };
 
+// カテゴリー読み込み
 async function loadCategories(){
   const { data, error } = await supabase
     .from('find_categories')
     .select('id,name')
     .order('sort', { ascending: true });
 
-  if(error){ console.error('カテゴリ読み込み失敗', error); return; }
+  if(error){ console.error(error); return; }
   data.forEach(c=>{
     els.category.insertAdjacentHTML('beforeend', `<option value="${c.id}">${c.name}</option>`);
   });
 }
 
+// メニュー読み込み
 async function loadMenusByCategory(cid){
   els.menu.innerHTML = `<option value="">メニューを選択</option>`;
   els.menu.disabled = true;
@@ -46,7 +48,7 @@ async function loadMenusByCategory(cid){
     .eq('category_id', Number(cid))
     .order('id', { ascending: true });
 
-  if(error){ console.error('メニュー読み込み失敗', error); return; }
+  if(error){ console.error(error); return; }
   data.forEach(m=>{
     els.menu.insertAdjacentHTML('beforeend', `<option value="${m.id}">${m.name_jp}</option>`);
   });
@@ -64,9 +66,9 @@ window.addEventListener('DOMContentLoaded', async ()=>{
   await loadCategories();
   els.category.addEventListener('change', (e)=> loadMenusByCategory(e.target.value));
 
-  // ハート：枠→赤PNGへ  // ハート：枠→赤PNGへ
-  els.heartBtn.addEventListener('click', ()=>{
-    els.heartBtn.classList.add('filled');
+  // ハートクリック → 赤版に切り替え
+  els.heart.addEventListener('click', ()=>{
+    els.heart.classList.add('filled');
   });
 });
 
@@ -85,7 +87,6 @@ els.form.addEventListener('submit', async (e)=>{
   if(!menuId){ alert('メニューを選択してください'); return; }
   if(!comment){ alert('クチコミを入力してください'); return; }
 
-  // 1日上限チェック
   const allPosts = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
   const todayList = allPosts[today] || [];
   if(todayList.length >= MAX_PER_DAY){
@@ -93,11 +94,8 @@ els.form.addEventListener('submit', async (e)=>{
     return;
   }
 
-  const { error } = await supabase
-    .from('find_comments')
-    .insert([{ menu_id: menuId, comment }], { returning: 'minimal' });
-
-  if(error){ console.error('保存失敗', error); alert('保存に失敗しました'); return; }
+  const { error } = await supabase.from('find_comments').insert([{ menu_id: menuId, comment }]);
+  if(error){ console.error(error); alert('保存に失敗しました'); return; }
 
   todayList.push(menuId);
   allPosts[today] = todayList;
