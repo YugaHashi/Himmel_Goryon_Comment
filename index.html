@@ -8,11 +8,11 @@
 </head>
 <body>
   <script>
-    // ?date=YYYY-MM-DD を自動付与// ?date=YYYY-MM-DD を自動付与
+    // ?date=YYYY-MM-DD を自動付与（既存仕様）
     (function(){
       const today = new Date().toISOString().slice(0,10);
       const params = new URLSearchParams(window.location.search);
-      if(params.get('date') !== today){
+      if (params.get('date') !== today) {
         params.set('date', today);
         location.replace(`${location.pathname}?${params.toString()}`);
       }
@@ -20,32 +20,22 @@
   </script>
 
   <div class="container">
-    <!-- ハートボタン -->
-    <div class="heart-area">
-      <button id="heart-stamp" class="heart-stamp" type="button" aria-label="ハートを押す"></button>
-    </div>
+    <!-- ハート（初期: 💙 ／押下後: 💓） -->
+    <button id="heart" class="heart" type="button" aria-label="ハート">
+      <span id="heart-emoji" aria-hidden="true">💙</span>
+    </button>
 
-    <!-- クチコミフォーム -->
+    <!-- フォーム（縦並び） -->
     <form id="comment-form" class="form">
-      <div class="row two-cols">
-        <div class="field">
-          <label for="form-category">カテゴリー</label>
-          <select id="form-category" required>
-            <option value="">選択してください</option>
-          </select>
-        </div>
-        <div class="field">
-          <label for="form-menu">メニュー</label>
-          <select id="form-menu" required disabled>
-            <option value="">カテゴリーを選んでください</option>
-          </select>
-        </div>
-      </div>
+      <select id="form-category" required aria-label="カテゴリー">
+        <option value="">カテゴリーを選択</option>
+      </select>
 
-      <div class="field">
-        <label for="comment">クチコミ</label>
-        <textarea id="comment" rows="3" placeholder="クチコミを入力してください" required></textarea>
-      </div>
+      <select id="form-menu" required disabled aria-label="メニュー">
+        <option value="">メニューを選択</option>
+      </select>
+
+      <textarea id="comment" rows="3" placeholder="クチコミを入力してください" required></textarea>
 
       <button id="submit-btn" type="submit" class="primary">共有する</button>
     </form>
