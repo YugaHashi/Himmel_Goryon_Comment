@@ -8,12 +8,11 @@
 </head>
 <body>
   <script>
-    // 自動で ?date=YYYY-MM-DD を付与（既存仕様を踏襲）
-    // 自動で ?date=YYYY-MM-DD を付与（既存仕様を踏襲）
+    // ?date=YYYY-MM-DD を自動付与
     (function(){
       const today = new Date().toISOString().slice(0,10);
       const params = new URLSearchParams(window.location.search);
-      if (params.get('date') !== today) {
+      if(params.get('date') !== today){
         params.set('date', today);
         location.replace(`${location.pathname}?${params.toString()}`);
       }
@@ -21,45 +20,35 @@
   </script>
 
   <div class="container">
-    <!-- ハートのスタンプ -->
-    <div class="stamp-area" aria-live="polite">
-      <button id="heart-stamp" class="heart-stamp" type="button" aria-label="ハートを押す">
-        <span class="heart-shape" aria-hidden="true"></span>
-        <span id="heart-emoji" class="heart-emoji" aria-hidden="true">💓</span>
-      </button>
-      <p class="hint">推すとハートが点灯します</p>
+    <!-- ハートボタン -->
+    <div class="heart-area">
+      <button id="heart-stamp" class="heart-stamp" type="button" aria-label="ハートを押す"></button>
     </div>
 
     <!-- クチコミフォーム -->
     <form id="comment-form" class="form">
-      <div class="labels-under-heart">
-        <div class="row two-cols">
-          <div class="field">
-            <label for="form-category">カテゴリーを選択</label>
-            <select id="form-category" required>
-              <option value="">選択してください</option>
-            </select>
-          </div>
-
-          <div class="field">
-            <label for="form-menu">メニューを選択</label>
-            <select id="form-menu" required disabled>
-              <option value="">カテゴリーを先に選択してください</option>
-            </select>
-          </div>
-        </div>
-
+      <div class="row two-cols">
         <div class="field">
-          <label for="comment">クチコミを入力してください</label>
-          <textarea id="comment" rows="3" placeholder="例：香りが良くて余韻が最高でした" required></textarea>
+          <label for="form-category">カテゴリー</label>
+          <select id="form-category" required>
+            <option value="">選択してください</option>
+          </select>
         </div>
+        <div class="field">
+          <label for="form-menu">メニュー</label>
+          <select id="form-menu" required disabled>
+            <option value="">カテゴリーを選んでください</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="comment">クチコミ</label>
+        <textarea id="comment" rows="3" placeholder="クチコミを入力してください" required></textarea>
       </div>
 
       <button id="submit-btn" type="submit" class="primary">共有する</button>
     </form>
-
-    <!-- 投稿後に表示する最新コメント -->
-    <div id="latest-comment" class="latest-comment"></div>
   </div>
 
   <script type="module" src="script.js"></script>
