@@ -9,7 +9,7 @@ body{
   font-family: system-ui, sans-serif;
   margin:0;
   color:var(--text);
-  background:transparent; /* 白背景削除 */
+  background:transparent; /* 白背景削除 *//* 白背景削除 */
 }
 .container{ max-width:720px; margin:24px auto; padding:0 16px; }
 
