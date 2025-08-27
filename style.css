@@ -10,7 +10,7 @@ body{
   margin:0; font-family:system-ui, sans-serif;
   background:transparent; color:var(--text);
 }
-.container{ max-width:640px; margin:20px auto; padding:0 16px; text-align:center; }
+.container{ max-width:640px; margin:16px auto; padding:0 16px; text-align:center; }
 
 /* ===== ハート ===== */
 .heart{
