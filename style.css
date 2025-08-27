@@ -1,6 +1,5 @@
 :root{
-  --red:#e11d48;     /* 枠色＆アクセント（赤） *//* 枠色＆アクセント（赤） */
-  --blue:#2563eb;    /* ボタン青 *//* 枠色＆アクセント（赤） */
+  --blue:#2563eb;
   --blue-2:#1d4ed8;
   --text:#111827;
   --border:#e5e7eb;
@@ -8,64 +7,40 @@
 
 *{box-sizing:border-box;}
 body{
-  margin:0; font-family:system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans JP", sans-serif;
-  color:var(--text);
-  background:transparent; /* 背景は透過のまま */
+  margin:0; font-family:system-ui, sans-serif;
+  background:transparent; color:var(--text);
 }
 .container{ max-width:640px; margin:24px auto; padding:0 16px; text-align:center; }
 
 /* ===== ハート ===== */
 .heart{
-  width:140px; height:140px;           /* 大きめ、シンプル */
-  margin:0 auto 18px;
+  width:140px; height:140px;
+  margin:0 auto 20px;
   border:none; background:none; cursor:pointer;
-  position:relative; display:block;
-  transition:transform .18s ease;
-}
-.heart:active{ transform:scale(.97); }
-
-/* 初期：枠だけのハート（透明背景） */
-.heart::before,
-.heart::after{
-  content:"";
-  position:absolute; top:6px; left:50%;
-  width:72px; height:110px;
-  border-radius:72px 72px 0 0;
-  border:8px solid var(--red);
-  border-bottom:none;
-  background:transparent;
-  transition:all .25s ease;
-}
-.heart::before{ transform:translateX(-100%) rotate(-45deg); transform-origin:100% 100%; }
-.heart::after { transform:translateX(0)      rotate(45deg);  transform-origin:  0% 100%; }
-
-/* クリック後：PNG を全面に表示（光沢ありの赤ハート） */
-.heart.filled{
-  background-image:url("heart-red.png");     /* 透過PNGを同フォルダに配置 */
+  background-image:url("heart-outline.png");  /* 初期はアウトライン */
   background-repeat:no-repeat;
   background-position:center;
   background-size:contain;
+  transition:transform .18s ease;
+}
+.heart:active{ transform:scale(.96); }
+
+.heart.filled{
+  background-image:url("heart-red.png");      /* クリックで赤版に */
   animation: pop .22s ease-out;
 }
-.heart.filled::before,
-.heart.filled::after{
-  opacity:0; transform:scale(1.05); /* 枠はフェードアウト */
-}
-
 @keyframes pop{
-  0%{ transform:scale(.9); }
+  0%{ transform:scale(.85); }
   100%{ transform:scale(1); }
 }
 
-/* ===== フォーム（縦並び） ===== */
+/* ===== フォーム ===== */
 .form{ display:flex; flex-direction:column; gap:12px; text-align:left; }
-
 select, textarea{
   width:100%; font-size:16px; padding:11px 12px;
   border-radius:12px; border:1.5px solid var(--border);
-  background:#fff; outline:none;
+  background:#fff;
 }
-select:disabled{ color:#9ca3af; }
 textarea{ resize:vertical; min-height:96px; }
 
 /* ボタン（青） */
